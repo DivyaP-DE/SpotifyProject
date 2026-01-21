@@ -1,0 +1,9 @@
+{
+	"name": "DFSpotifyDivya",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "1296f6b7-0cad-48c9-8527-692d78ce6814",
+		"tenantId": "2d1a0348-5e00-4dfe-ba1d-b541210e77e0"
+	}
+}
