@@ -135,6 +135,8 @@
 			{
 				"name": "If_Incremental_data",
 				"type": "IfCondition",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "AzureSQL to ADLS",
