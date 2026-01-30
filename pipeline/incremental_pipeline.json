@@ -146,7 +146,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"expression": {
-						"value": "@greater(pipeline().parameters.cdc_col,activity('update_last_cdc').output)",
+						"value": "@greater(activity('AzureSQL to ADLS').output.dataRead,0)",
 						"type": "Expression"
 					},
 					"ifFalseActivities": [
@@ -297,13 +297,16 @@
 		],
 		"parameters": {
 			"schema": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "dbo"
 			},
 			"table": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "DimUser"
 			},
 			"cdc_col": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "updated_at"
 			}
 		},
 		"variables": {
