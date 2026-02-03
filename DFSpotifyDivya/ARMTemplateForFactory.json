@@ -71,7 +71,7 @@
 							"source": {
 								"type": "AzureSqlSource",
 								"sqlReaderQuery": {
-									"value": "select * from @{pipeline().parameters.schema}.@{pipeline().parameters.table} where @{pipeline().parameters.cdc_col} > @{activity('last_cdc').output.firstRow.cdc}",
+									"value": "select * from @{pipeline().parameters.schema}.@{pipeline().parameters.table} where @{pipeline().parameters.cdc_col} > '@{if(empty(pipeline().parameters.from_date),activity('last_cdc').output.firstRow.cdc, pipeline().parameters.from_date)}'",
 									"type": "Expression"
 								},
 								"queryTimeout": "02:00:00",
@@ -150,7 +150,10 @@
 								"type": "DatasetReference",
 								"parameters": {
 									"container": "bronze",
-									"folder": "cdc",
+									"folder": {
+										"value": "@{pipeline().parameters.table}_cdc",
+										"type": "Expression"
+									},
 									"file": "cdc.json"
 								}
 							}
@@ -187,7 +190,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"expression": {
-								"value": "@greater(pipeline().parameters.cdc_col,activity('update_last_cdc').output)",
+								"value": "@greater(activity('AzureSQL to ADLS').output.dataRead,0)",
 								"type": "Expression"
 							},
 							"ifFalseActivities": [
@@ -250,7 +253,7 @@
 											{
 												"type": "Query",
 												"text": {
-													"value": "select max(@{pipeline().parameters.cdc_col}) as max_cdc from @{pipeline().parameters.schema}.@{pipeline().parameters.table}",
+													"value": "select max([@{pipeline().parameters.cdc_col}]) as max_cdc from [@{pipeline().parameters.schema}].[@{pipeline().parameters.table}]",
 													"type": "Expression"
 												}
 											}
@@ -315,7 +318,10 @@
 											"type": "DatasetReference",
 											"parameters": {
 												"container": "bronze",
-												"folder": "cdc",
+												"folder": {
+													"value": "@{pipeline().parameters.table}_cdc",
+													"type": "Expression"
+												},
 												"file": "empty.json"
 											}
 										}
@@ -326,7 +332,10 @@
 											"type": "DatasetReference",
 											"parameters": {
 												"container": "bronze",
-												"folder": "cdc",
+												"folder": {
+													"value": "@{pipeline().parameters.table}_cdc",
+													"type": "Expression"
+												},
 												"file": "cdc.json"
 											}
 										}
@@ -341,12 +350,18 @@
 				},
 				"parameters": {
 					"schema": {
-						"type": "string"
+						"type": "string",
+						"defaultValue": "dbo"
 					},
 					"table": {
-						"type": "string"
+						"type": "string",
+						"defaultValue": "DimUser"
 					},
 					"cdc_col": {
+						"type": "string",
+						"defaultValue": "updated_at"
+					},
+					"from_date": {
 						"type": "string"
 					}
 				},
